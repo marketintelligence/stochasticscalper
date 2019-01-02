@@ -18,7 +18,7 @@ input double         Lots         = 0.01;     //Fixed Lots
 input double         StopLoss     = 100;      //Fixed Stop Loss (in Points)
 input double         TakeProfit   = 0;      //Fixed Take Profit (in Points)
 input int            TrailingStop = 2;       //Trailing Stop (in Points)
-input double         Waiting_Time = 3600;    // Waiting time (In Seconds)
+input double         Waiting_Time = 0;    // Waiting time (In Seconds)
 input int            BuyEntry     = 95;      // Buy Entry Point
 input int            SellEntry    = 5;       //Sell Entry point
 
