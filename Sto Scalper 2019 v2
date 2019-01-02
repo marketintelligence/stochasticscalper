@@ -43,10 +43,10 @@ input bool        Market_Execution=true;   // ECN, NDD etc
 input bool        Write_Journal=true;
 
 input string      Trade_Hours="* Trade Hours:";
-input int         Morning_Start=10;     // London Session Starts
-input int         Morning_End= 13;     // After 3 Hours
+input int         Morning_Start=6;     // London Session Starts
+input int         Morning_End= 15;     // After 3 Hours
 input int         Evening_Start = 15;  // New York Seeions Starts
-input int         Evening_End =20;     // After 6 Hours
+input int         Evening_End =23;     // After 6 Hours
 
 
 //---
