@@ -1,10 +1,5 @@
-// Highlight improve upon Scalper V5 profitable
-// V5 TP is very profitable
-// Using M1 Chart for More regularity
-// Timer set Morning and evening session, for higher probablility of earnings
-// Later maybe can add in some trailing stop
-// Trailing stop actually working
-// Based on test58 (0.03 Lot Size, and 2 Trailing Stop)
+// Documentation is here
+// https://docs.google.com/document/d/1I1WaDHa6uJ1OltvR3BNujDo-7Fcji67frRnD980tNGA/edit?usp=sharing
 
 #property copyright "Copyright 2018, Cheah Boo Lim"
 #property link      "https://fxforex-trading.com/"
@@ -81,6 +76,7 @@ void OnTick()
 
    sto_main_curr  = iStochastic (Symbol() ,PERIOD_CURRENT ,k_period ,d_period ,slowing ,ma_method ,price_field ,MODE_MAIN   ,0);
    sto_main_1  = iStochastic (Symbol() ,PERIOD_CURRENT ,k_period ,d_period ,slowing ,ma_method ,price_field ,MODE_MAIN ,1);
+   sto_main_2  = iStochastic (Symbol() ,PERIOD_CURRENT ,k_period ,d_period ,slowing ,ma_method ,price_field ,MODE_MAIN ,2);
 
    if(TotalOrdersCount()==0)
      {
@@ -121,31 +117,38 @@ void OnTick()
       if(BuyEntry<sto_main_curr) // Buy when market have strong buy
         {
           
-               if(sto_main_1<sto_main_curr) //Indicating Upward Trend as the previous bar is lower than the current bar 
+               if((sto_main_2<sto_main_1)&&(sto_main_1<sto_main_curr)) //Indicating Upward Trend as the previous bar is lower than the current bar 
                 {
                 
-                  if(OrderType()==OP_SELL)
+                 if(OrderType()==0)// If Previous Order is Buy
+                  
+                  {
+                     Comment("Previous Order is Buy, Don't Trade");
+                  }
+                  
+                 else
                   
                   {
 
-               result=OrderSend(Symbol(),OP_BUY,Lots,Ask,Slippage,0,0,"Buy Frankfurt",MagicNumber,0,clrAliceBlue);
+                     result=OrderSend(Symbol(),OP_BUY,Lots,Ask,Slippage,0,0,"Buy Frankfurt",MagicNumber,0,clrAliceBlue);
                
-               Alert(" Frankfurt Buy Order, Ask = ", Ask, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
+                     Alert(" Frankfurt Buy Order, Ask = ", Ask, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
-               if(result>0)
-                 {
-                  TheStopLoss=0;
-                  TheTakeProfit=0;
-                  if(TakeProfit > 0) TheTakeProfit = Ask + TakeProfit * MyPoint;
-                  if(StopLoss > 0)   TheStopLoss   = Ask - StopLoss * MyPoint;
-                  int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
-                  int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
+                  if(result>0)
+                  
+                     {
+                        TheStopLoss=0;
+                        TheTakeProfit=0;
+                        if(TakeProfit > 0) TheTakeProfit = Ask + TakeProfit * MyPoint;
+                        if(StopLoss > 0)   TheStopLoss   = Ask - StopLoss * MyPoint;
+                        int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
+                        int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
                                                   NormalizeDouble(TheTakeProfit,Digits),0,Green);
-                 }
+                     }
                  
                  }
                         
-                     }
+               }
                
            
         }
@@ -154,35 +157,39 @@ void OnTick()
         {
 
             
-               if(sto_main_curr<sto_main_1) // Previous bar bigger than current bar indicating doward trend
-                {
-                  
-                  if(OrderType()==OP_BUY)
-                  
-                  {
+         if((sto_main_1<sto_main_2)&&(sto_main_curr<sto_main_1)) // Previous bar bigger than current bar indicating doward trend
                 
+             {
+                  
+               if(OrderType()==1)// If previous order is Sell
+                  
+               {
+                   Comment("Previous Order is Sell, Don't Trade");
+               }
+                  
+               else
+                
+               {
 
-               result=OrderSend(Symbol(),OP_SELL,Lots,Bid,Slippage,0,0,"Sell Frankfurt",MagicNumber,0,clrDarkRed);
+                  result=OrderSend(Symbol(),OP_SELL,Lots,Bid,Slippage,0,0,"Sell Frankfurt",MagicNumber,0,clrDarkRed);
                
-               Alert(" Frankfurt Sell Order, Ask = ", Bid, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
+                  Alert(" Frankfurt Sell Order, Ask = ", Bid, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
-               if(result>0)
-                 {
-                  TheStopLoss=0;
-                  TheTakeProfit=0;
-                  if(TakeProfit > 0) TheTakeProfit = Bid - TakeProfit * MyPoint;
-                  if(StopLoss > 0)   TheStopLoss   = Bid + StopLoss * MyPoint;
-                  int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
-                  int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
+                  if(result>0)
+                     
+                     {
+                        TheStopLoss=0;
+                        TheTakeProfit=0;
+                        if(TakeProfit > 0) TheTakeProfit = Bid - TakeProfit * MyPoint;
+                        if(StopLoss > 0)   TheStopLoss   = Bid + StopLoss * MyPoint;
+                        int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
+                        int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
                                                   NormalizeDouble(TheTakeProfit,Digits),0,Green);
-                 }
+                     }
                         
-                 }
+                }
                
                }
-
-               
-           
         }
      }
    }
@@ -207,66 +214,77 @@ void OnTick()
       if(BuyEntry<sto_main_curr) // Buy when market have strong buy
         {
           
-               if(sto_main_1<sto_main_curr) //Indicating Upward Trend as the previous bar is lower than the current bar 
-                {
+          if((sto_main_2<sto_main_1)&&(sto_main_1<sto_main_curr))//Indicating Upward Trend as the previous bar is lower than the current bar 
+                
+              {
                   
-                  if(OrderType()==OP_SELL)
-                  
+                 if(OrderType()==0) // If previous order is Buy
+                 
                   {
-
-               result=OrderSend(Symbol(),OP_BUY,Lots,Ask,Slippage,0,0,"Buy New York",MagicNumber,0,clrAzure);
+                 
+                  Comment("Previous Order is a Buy");
                
-               Alert(" NY Buy Order, Ask = ", Ask, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
+                  }           
+                 
+                 else       
+                 
+                  {
+                 
 
-               if(result>0)
-                 {
-                  TheStopLoss=0;
-                  TheTakeProfit=0;
-                  if(TakeProfit > 0) TheTakeProfit = Ask + TakeProfit * MyPoint;
-                  if(StopLoss > 0)   TheStopLoss   = Ask - StopLoss * MyPoint;
-                  int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
-                  int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
+                     result=OrderSend(Symbol(),OP_BUY,Lots,Ask,Slippage,0,0,"Buy New York",MagicNumber,0,clrAzure);
+               
+                     Alert(" NY Buy Order, Ask = ", Ask, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
+
+                        if(result>0)
+                          {
+                              TheStopLoss=0;
+                              TheTakeProfit=0;
+                              if(TakeProfit > 0) TheTakeProfit = Ask + TakeProfit * MyPoint;
+                              if(StopLoss > 0)   TheStopLoss   = Ask - StopLoss * MyPoint;
+                              int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
+                              int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
                                                   NormalizeDouble(TheTakeProfit,Digits),0,Green);
-                 }
+                          }
                  
                  }
                         
                      
-               }
+             }
            
         }
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~SELL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       if(SellEntry>sto_main_curr) // Sell when market have a strong sell signal
         {
 
-               if(sto_main_curr<sto_main_1) // Previous bar bigger than current bar indicating doward trend
-                {
+         if((sto_main_1<sto_main_2)&&(sto_main_curr<sto_main_1)) // Previous bar bigger than current bar indicating doward trend
+                
+           {
+                
+            if(OrderType()==1)// If previous order is Sell
+                  
+             {
+                   Comment("Previous Order is Sell, Don't Trade");
+             }
+            else
+                
+             {
 
                result=OrderSend(Symbol(),OP_SELL,Lots,Bid,Slippage,0,0,"Sell New York",MagicNumber,0,clrRed);
                
-                  if(OrderType()==OP_SELL)
-                  
-                  {
-               
                Alert(" NY Sell Order, Ask = ", Bid, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
-               if(result>0)
-                 {
-                  TheStopLoss=0;
-                  TheTakeProfit=0;
-                  if(TakeProfit > 0) TheTakeProfit = Bid - TakeProfit * MyPoint;
-                  if(StopLoss > 0)   TheStopLoss   = Bid + StopLoss * MyPoint;
-                  int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
-                  int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
+                   if(result>0)
+                     {
+                        TheStopLoss=0;
+                        TheTakeProfit=0;
+                        if(TakeProfit > 0) TheTakeProfit = Bid - TakeProfit * MyPoint;
+                        if(StopLoss > 0)   TheStopLoss   = Bid + StopLoss * MyPoint;
+                        int MyOrderSelect = OrderSelect(result,SELECT_BY_TICKET);
+                        int MyOrderModify = OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(TheStopLoss,Digits),
                                                   NormalizeDouble(TheTakeProfit,Digits),0,Green);
-                 }
-                 
-                 }
-                        
-                     
-
-               }
-           
+                     }
+              }
+           } 
         }
      }
    }
