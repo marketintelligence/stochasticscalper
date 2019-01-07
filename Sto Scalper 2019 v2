@@ -70,7 +70,12 @@ void OnTick()
    int Previoustime =OrderCloseTime();
    int CurrentTime =TimeCurrent();
    double TimeDifference =CurrentTime-Previoustime;
-
+   
+//+------------------------------------------------------------------+
+//|  AUTO LOT SIZING                                                 |
+//+------------------------------------------------------------------+
+   
+   double Lot= AccountBalance()/(Risk*400);
 
    if(Digits==3 || Digits==5) MyPoint=Point*10;
 
@@ -130,7 +135,7 @@ void OnTick()
                   
                   {
 
-                     result=OrderSend(Symbol(),OP_BUY,Lots,Ask,Slippage,0,0,"Buy Frankfurt",MagicNumber,0,clrAliceBlue);
+                     result=OrderSend(Symbol(),OP_BUY,Lot,Ask,Slippage,0,0,"Buy Frankfurt",MagicNumber,0,clrAliceBlue);
                
                      Alert(" Frankfurt Buy Order, Ask = ", Ask, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
@@ -171,7 +176,7 @@ void OnTick()
                 
                {
 
-                  result=OrderSend(Symbol(),OP_SELL,Lots,Bid,Slippage,0,0,"Sell Frankfurt",MagicNumber,0,clrDarkRed);
+                  result=OrderSend(Symbol(),OP_SELL,Lot,Bid,Slippage,0,0,"Sell Frankfurt",MagicNumber,0,clrDarkRed);
                
                   Alert(" Frankfurt Sell Order, Ask = ", Bid, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
@@ -231,7 +236,7 @@ void OnTick()
                   {
                  
 
-                     result=OrderSend(Symbol(),OP_BUY,Lots,Ask,Slippage,0,0,"Buy New York",MagicNumber,0,clrAzure);
+                     result=OrderSend(Symbol(),OP_BUY,Lot,Ask,Slippage,0,0,"Buy New York",MagicNumber,0,clrAzure);
                
                      Alert(" NY Buy Order, Ask = ", Ask, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
@@ -269,7 +274,7 @@ void OnTick()
                 
              {
 
-               result=OrderSend(Symbol(),OP_SELL,Lots,Bid,Slippage,0,0,"Sell New York",MagicNumber,0,clrRed);
+               result=OrderSend(Symbol(),OP_SELL,Lot,Bid,Slippage,0,0,"Sell New York",MagicNumber,0,clrRed);
                
                Alert(" NY Sell Order, Ask = ", Bid, " Session = ", OrderComment(), " Stochastic Value = ", sto_main_curr, " Opening Order = ", TimeCurrent());
 
